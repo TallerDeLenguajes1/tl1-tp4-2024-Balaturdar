@@ -25,17 +25,17 @@ Nodo * crearNodo(int *id){
     char *buff = (char*)malloc(100*sizeof(char));
     Nnodo->T.TareaID = *id;
     (*id)++;
-
-    puts("ingrese la descripcion de la tarea: ");
+    puts("** ingrese la descripcion de la tarea **");
+    fflush(stdin);
     gets(buff);
     Nnodo->T.Descripcion = (char*) malloc ((strlen(buff)+1) * sizeof(char));
     strcpy(Nnodo->T.Descripcion, buff);
     do{
-        printf("\n**Ingrese la duracion de la tarea (entre 10 y 100)**");
+        printf("\n**Ingrese la duracion de la tarea (entre 10 y 100)**\n");
         fflush(stdin);
         scanf("%d",&Nnodo->T.Duracion);
         if (Nnodo->T.Duracion < 10 || Nnodo->T.Duracion > 100){
-            printf("\n**la duracion no puede ser menor a 10 ni mayor a 100**");
+            printf("\n**la duracion no puede ser menor a 10 ni mayor a 100**\n");
         }
     } while(Nnodo->T.Duracion < 10 || Nnodo->T.Duracion > 100);
     Nnodo->Siguiente = NULL;
@@ -52,11 +52,12 @@ void InsertarNodo(Nodo **start, Nodo *NuevoNodo){
     *start = NuevoNodo;
 };
  
-void cargarTareas(Nodo *tareasPendientes,int *id){
+void cargarTareas(Nodo **tareasPendientes,int *id){
     char *opc = (char *)malloc(sizeof(char));
     do{
-        InsertarNodo(&tareasPendientes, crearNodo(id));
-        puts("¿desea ingresar otra tarea? s/n");
+        InsertarNodo(tareasPendientes, crearNodo(id));
+        puts("¿desea ingresar otra tarea? s/n \n");
+        fflush(stdin);
         *opc = getchar();
     } while(*opc == 's' || *opc == 'S');
     free(opc);
@@ -70,10 +71,10 @@ void mostrarTarea(Tarea tarea){
 
 void mostrarLista(Nodo *start, char *nombreLista){
     printf("\n\n**** %s ****",nombreLista);
-    if(start == NULL){
-        printf("\n\n** La lista no tiene elementos\n\n");
-        return;
-    }
+    //if(start == NULL){
+    //    printf("\n\n** La lista no tiene elementos **\n\n");
+    //    return;
+    //}
     do{
         mostrarTarea(start->T);
         start = start->Siguiente;
@@ -115,7 +116,7 @@ void completarTarea(Nodo *pendientes, Nodo *realizadas,int id){
 
 //[]->[]->[id]->[]->[]->[]
 //              []->[]->[]
-
+/*
 void menu(Nodo *TareasPendientes, Nodo *TareasRealizadas, int *id){
     char opc;
      char *buff = (char *)malloc(100*sizeof(char));
@@ -133,21 +134,19 @@ void menu(Nodo *TareasPendientes, Nodo *TareasRealizadas, int *id){
         puts("**                    6-salir                   **");
         puts("**************************************************");
         fflush(stdin);
-        printf("\nIngrese una pocion: ");
+        printf("\nIngrese una opcion: ");
         scanf("%d",&opc);
 
+        fflush(stdin);
         switch (opc){
         case 1:
-            /* 1-cargar tareas pendiente */
             cargarTareas(TareasPendientes, id);
             break;
         case 2:
-            /* 2-listar tareas pendientes y realizadas */
             mostrarLista(TareasPendientes, "Tareas Pendientes");
             mostrarLista(TareasRealizadas, "Tareas Realizadas");
             break;
         case 3:
-            /* 3-transferir tareaa de pendiente a realizada */
             if(TareasPendientes != NULL){
                 printf("\n Ingrese el ID de la tarea que se completo: ");
                 fflush(stdin);
@@ -158,7 +157,6 @@ void menu(Nodo *TareasPendientes, Nodo *TareasRealizadas, int *id){
             }
             break;
         case 4:
-            /* 4-buscar tarea por ID */
             printf("\n Ingrese el ID que desea buscar: ");
             fflush(stdin);
             scanf("%d",&idBuscado);
@@ -178,7 +176,6 @@ void menu(Nodo *TareasPendientes, Nodo *TareasRealizadas, int *id){
             
             break;
         case 5:
-            /* 5-buscar tarea por palabra clave */
             printf("\n Ingrese la palabra clave que desea buscar: ");
             fflush(stdin);
             gets(buff);
@@ -195,7 +192,6 @@ void menu(Nodo *TareasPendientes, Nodo *TareasRealizadas, int *id){
                     printf("\nNo se encontro ninguna tarea con esa descripcion\n");
                 }
             }
-            buscarTareaClave(TareasPendientes, buff);
             break;
         }
         if (opc != 6)
@@ -209,6 +205,7 @@ void menu(Nodo *TareasPendientes, Nodo *TareasRealizadas, int *id){
     free(buff);
 
 };
+*/
 
 void liberarMemoria(Nodo *Pendientes, Nodo *realizadas){
     for (int i = 0; (Pendientes+i) != NULL; i++)
@@ -226,11 +223,106 @@ void liberarMemoria(Nodo *Pendientes, Nodo *realizadas){
 //############################## PRINCIPAL ##############################
 int main(int argc, char const *argv[]){
     srand(time(NULL));
+
     int *id = (int *)malloc(sizeof(int));
     *id = 1000;
+
     Nodo *tareasPendientes = crearListaVacia();
     Nodo *tareasRealizadas = crearListaVacia();
-    menu(tareasPendientes, tareasRealizadas, id);
+    //menu(tareasPendientes, tareasRealizadas, id);
+
+    char opc;
+    char *buff = (char *)malloc(100*sizeof(char));
+    int idBuscado,idcompletado;
+    Nodo *tareaEncontrada;
+
+    do
+    {
+
+        puts("**************************************************");
+        puts("**           1-cargar tareas pendiente          **");
+        puts("**    2-listar tareas pendientes y realizadas   **");
+        puts("** 3-transferir tareaa de pendiente a realizada **");
+        puts("**           4-buscar tarea por ID              **");
+        puts("**       5-buscar tarea por palabra clave       **");
+        puts("**                    6-salir                   **");
+        puts("**************************************************");
+        fflush(stdin);
+        printf("\nIngrese una opcion: ");
+        scanf("%d",&opc);
+
+        fflush(stdin);
+        switch (opc){
+        case 1:
+            /* 1-cargar tareas pendiente */
+            cargarTareas(&tareasPendientes, id);
+            break;
+        case 2:
+            /* 2-listar tareas pendientes y realizadas */
+            mostrarLista(tareasPendientes, "Tareas Pendientes");
+            mostrarLista(tareasRealizadas, "Tareas Realizadas");
+            break;
+        case 3:
+            /* 3-transferir tareaa de pendiente a realizada */
+            if(tareasPendientes != NULL){
+                printf("\n Ingrese el ID de la tarea que se completo: ");
+                fflush(stdin);
+                scanf("%d",&idcompletado);
+                completarTarea(tareasPendientes,tareasRealizadas,idcompletado);
+            }else{
+                printf("\nNo hay tareas en la lista de pendientes");
+            }
+            break;
+        case 4:
+            /* 4-buscar tarea por ID */
+            printf("\n Ingrese el ID que desea buscar: ");
+            fflush(stdin);
+            scanf("%d",&idBuscado);
+            tareaEncontrada = buscarTareaId(tareasPendientes, idBuscado);
+            if (tareaEncontrada != NULL){
+                printf("\nTarea encontrada en la lista de Tareas Pendientes");
+                mostrarTarea(tareaEncontrada->T);
+            }else{
+                tareaEncontrada = buscarTareaId(tareasRealizadas,idBuscado);
+                if (tareaEncontrada != NULL){
+                    printf("\nTarea encontrada en la lista de Tareas Realizadas");
+                    mostrarTarea(tareaEncontrada->T);
+                }else{
+                    printf("\nNo se encontro ninguna tarea con ese ID\n");
+                }
+            }
+            
+            break;
+        case 5:
+            /* 5-buscar tarea por palabra clave */
+            printf("\n Ingrese la palabra clave que desea buscar: ");
+            fflush(stdin);
+            gets(buff);
+            tareaEncontrada = buscarTareaClave(tareasPendientes, buff);
+            if (tareaEncontrada != NULL){
+                printf("\nTarea encontrada en la lista de Tareas Pendientes");
+                mostrarTarea(tareaEncontrada->T);
+            }else{
+                tareaEncontrada = buscarTareaClave(tareasRealizadas, buff);
+                if (tareaEncontrada != NULL){
+                    printf("\nTarea encontrada en la lista de Tareas Realizadas");
+                    mostrarTarea(tareaEncontrada->T);
+                }else{
+                    printf("\nNo se encontro ninguna tarea con esa descripcion\n");
+                }
+            }
+            break;
+        }
+        if (opc != 6)
+        {
+            printf("\n\n**Desea realizar otra operacion?(s/n)**\n");
+            fflush(stdin);
+            opc=getchar();
+        }
+        
+    } while (opc != 6);
+    free(buff);
+
     liberarMemoria(tareasPendientes,tareasRealizadas);
     free(id);
     return 0;
